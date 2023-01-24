@@ -1,0 +1,1 @@
+export const PWContractAddress = "0xd698c98384e060de6290a9106573a226a932a07f"
