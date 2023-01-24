@@ -10,6 +10,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
 
 import { PWContractAddress } from './config.js';
 import {ethers} from 'ethers';
@@ -152,6 +154,18 @@ function App(){
     setInput3('');
   }
 
+  const generatePassword = () => {
+    let password = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@_!%&*@_!%&*0123456789@_!%&*@_!%&*@!*_&123456789';
+    let charactersLength = characters.length;
+    let length = Math.floor(Math.random() * (14 - 8 + 1)) + 8;
+    for (let i = 0; i < length; i++) {
+      password += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    setInput3(password);
+  }
+
+
   useEffect(()=>{
     connectWallet();
     getAllData();
@@ -161,13 +175,16 @@ function App(){
   return (
     <div>
       {currentAccount === '' ? (
-        <div className="loading" style={{width:"100%",height:"100vh",backgroundColor:"#67B0F9",display:'flex',alignItems:"center", justifyContent:"center"}}>
-        <button
-        className='text-2xl font-bold py-3 px-12 bg-[#f1c232] rounded-lg mb-10 hover:scale-105 transition duration-500 ease-in-out'
+        <div className="loading" style={{width:"100%",height:"100vh",backgroundColor:"white",display:'flex',alignItems:"center", justifyContent:"center",flexDirection:"column"}}>
+          <Stack sx={{ color: 'grey.500' }} spacing={2} direction="row">
+            <CircularProgress />
+          </Stack>
+        <Button variant="outlined"
         onClick={connectWallet}
+        style={{marginTop:"20px",fontWeight:"bold"}}
         >
-        Connect Wallet
-        </button>
+        Connect Wallet</Button>
+        
         </div>
         ) : correctNetwork ? (
           <div className="App">
@@ -178,8 +195,8 @@ function App(){
               <TextField id="outlined-basic2" label="User Name" variant="outlined" style={{margin:"0px 5px",marginTop:"7.5px"}} size="small" value={input2}
               onChange={e=>setInput2(e.target.value)} />
 
-          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined" >
+          <InputLabel htmlFor="outlined-adornment-password" style={{textAlign: 'center'}} size="small">Password</InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
             type={showPassword ? 'text' : 'password'}
@@ -198,11 +215,11 @@ function App(){
             label="Password"
             value={input3}
             onChange={e=>setInput3(e.target.value)} 
-            style={{margin:"0px 5px" , height:"40px"}}
+            size="small"
           />
         </FormControl>
-
-              <Button variant="contained" color="primary" onClick={addData}  style={{marginTop:"7.5px"}}>Add Data</Button>
+              <Button variant="contained" color="primary" onClick={generatePassword}  style={{marginTop:"10px"}}>Generate Password</Button>
+              <Button variant="contained" color="primary" onClick={addData}  style={{marginTop:"10px",marginLeft:"8px"}}>Add Data</Button>
             </form>
             <ul>
                 {Data.map(item=> 

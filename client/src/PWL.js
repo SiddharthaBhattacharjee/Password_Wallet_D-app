@@ -9,6 +9,11 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './PWL.css';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 const PWL=({siteName,userName,password, onClick})=>{
     const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +23,30 @@ const PWL=({siteName,userName,password, onClick})=>{
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+    const [open, setOpen] = React.useState(false);
+    
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+    
+        setOpen(false);
+    };
+
+    // function to copy password to clipboard
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(password);
+        setOpen(true);
+
+    };
+
+    const loadEditPage = () => {
+        // code to route to edit page
+
+    }
+
     return (
-        <List className="pw__list"> 
+        <List className="pw__list" style={{width:'95%'}}> 
             <ListItem>
                 <ListItemAvatar />
                     <ListItemText primary={siteName} />
@@ -54,7 +81,14 @@ const PWL=({siteName,userName,password, onClick})=>{
                 />
                 </FormControl>
             </ListItem>
-            <DeleteIcon fontSize="large" style={{opacity:0.8}} onClick={onClick}/>
+            <ContentCopyIcon fontSize="large" style={{opacity:0.8}} onClick={copyToClipboard}/>
+            <EditIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px'}}/>
+            <DeleteIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px', marginRight:'30px'}} onClick={onClick}/>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                Password Coppied to clipboard!
+                </Alert>
+            </Snackbar>
         </List> 
     )
 };
