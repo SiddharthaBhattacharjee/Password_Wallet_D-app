@@ -13,9 +13,19 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import TextField from '@mui/material/TextField';
+
+import { PWContractAddress } from './config.js';
+import {ethers} from 'ethers';
+import pwAbi from './utils/pwContract.json';
 
 
-const PWL=({siteName,userName,password, onClick})=>{
+const PWL=(props)=>{
+    let key_ = props.key_;
+    let siteName = props.siteName;
+    let userName = props.userName;
+    let password = props.password;
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -24,6 +34,14 @@ const PWL=({siteName,userName,password, onClick})=>{
         event.preventDefault();
     };
     const [open, setOpen] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
+    const [open3, setOpen3] = React.useState(false);
+    let input = siteName;
+    let input2 = userName;
+    let input3 = password;
+
+
+    const [edit, setEdit] = useState(false);
     
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -32,28 +50,79 @@ const PWL=({siteName,userName,password, onClick})=>{
     
         setOpen(false);
     };
+    const handleClose2 = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+    
+        setOpen2(false);
+    };
+    const handleClose3 = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+    
+        setOpen3(false);
+    };
 
     // function to copy password to clipboard
     const copyToClipboard = () => {
         navigator.clipboard.writeText(password);
         setOpen(true);
+        setOpen2(false);
+        setOpen3(false);
 
     };
 
-    const loadEditPage = () => {
-        // code to route to edit page
 
+    const editData = () => {
+        setEdit(true);
+        setOpen2(true);
+        setOpen(false);
+        setOpen3(false);
+    }
+
+    const saveData = async () => {
+        setEdit(false);
+        let data = {
+            siteName: input,
+            userName: input2,
+            password: input3
+        }
+        console.log(data)
+        console.log(typeof(key_))
+        console.log(key_)
+        console.log(props.updateHandler)
+        await props.updateHandler(props.key_, data.siteName, data.userName, data.password);
+        console.log("data saved")
+        setOpen3(true);
+        setOpen(false);
+        setOpen2(false);
     }
 
     return (
         <List className="pw__list" style={{width:'95%'}}> 
             <ListItem>
                 <ListItemAvatar />
-                    <ListItemText primary={siteName} />
+                    <TextField
+                        id="standard-read-only-input"
+                        label="Site Name"
+                        defaultValue={siteName}
+                        disabled={!edit}
+                        variant="standard"
+                        onChange={e=>{input=e.target.value}}
+                    />
             </ListItem>
             <ListItem>
                 <ListItemAvatar />
-                    <ListItemText primary={userName} />
+                <TextField
+                        id="standard-read-only-input"
+                        label="User Name"
+                        defaultValue={userName}
+                        disabled={!edit}
+                        variant="standard"
+                        onChange={e=>{input2=e.target.value}} 
+                    />
             </ListItem>
             <ListItem>
                 <ListItemAvatar />
@@ -75,18 +144,31 @@ const PWL=({siteName,userName,password, onClick})=>{
                     </InputAdornment>
                     }
                     label="Password"
-                    value={password}
+                    defaultValue={password}
                     style={{margin:"0px 5px" , height:"40px"}}
-                    disabled={true}
+                    disabled={!edit}
+                    onChange={e=>{input3=e.target.value}} 
                 />
                 </FormControl>
             </ListItem>
-            <ContentCopyIcon fontSize="large" style={{opacity:0.8}} onClick={copyToClipboard}/>
-            <EditIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px'}}/>
-            <DeleteIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px', marginRight:'30px'}} onClick={onClick}/>
+            <ContentCopyIcon fontSize="large" style={{opacity:0.8,cursor:"pointer"}} onClick={copyToClipboard}/>
+            {
+                edit ? <SaveIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px',cursor:"pointer"}} onClick={saveData}/> : <EditIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px',cursor:"pointer"}} onClick={editData}/>
+            }
+            <DeleteIcon fontSize="large" style={{opacity:0.8,marginLeft:'6px', marginRight:'30px',cursor:"pointer"}} onClick={props.onClick}/>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
                 Password Coppied to clipboard!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={open2} autoHideDuration={6000} onClose={handleClose2}>
+                <Alert onClose={handleClose2} severity="info" sx={{ width: '100%' }}>
+                You can now edit the data!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={open3} autoHideDuration={6000} onClose={handleClose3}>
+                <Alert onClose={handleClose3} severity="success" sx={{ width: '100%' }}>
+                Data saved successfully!
                 </Alert>
             </Snackbar>
         </List> 
